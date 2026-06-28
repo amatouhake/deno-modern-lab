@@ -1,0 +1,11 @@
+{
+  "todos": [
+    {
+      "id": "example-1",
+      "title": "Run deno task server",
+      "completed": false,
+      "createdAt": "2026-06-28T00:00:00.000Z",
+      "updatedAt": "2026-06-28T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "imports": {
+    "@/": "./"
+  },
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "tasks": {
+    "hello": "deno run src/cli.ts",
+    "server": "deno run -P=server src/server.ts",
+    "dev": "deno run -P=server --watch src/server.ts",
+    "watch:server": "deno watch -P=server src/server.ts",
+    "permissions": "DENO_LAB_MESSAGE='Hello from a scoped env permission' deno run -P=permissions-demo src/permissions_demo.ts",
+    "npm-node": "deno run --config examples/npm_node/deno.json -P=npm-node examples/npm_node/main.ts",
+    "jsr-std": "deno run --config examples/jsr_std/deno.json -P=jsr-std examples/jsr_std/main.ts",
+    "kv": "deno run --unstable-kv -P=kv src/kv_demo.ts",
+    "otel": "OTEL_DENO=true deno run -P=server src/otel_demo.ts",
+    "desktop": "deno desktop src/desktop_app.ts",
+    "bundle:browser": "deno bundle --platform browser --minify --output dist/browser-client.js examples/browser_client/main.ts",
+    "serve:static": "deno run --allow-read=. --allow-net jsr:@std/http/file-server .",
+    "compile:server": "deno compile -P=server --output dist/deno-lab-server src/server.ts",
+    "deps": "deno list",
+    "check": "deno check --unstable-kv mod.ts src/cli.ts src/server.ts src/permissions_demo.ts src/kv_demo.ts src/otel_demo.ts src/desktop_app.ts src/core/**/*.ts tests/**/*.ts benches/**/*.ts examples/browser_client/**/*.ts scripts/**/*.ts",
+    "fmt": "deno fmt",
+    "fmt:check": "deno fmt --check",
+    "lint": "deno lint",
+    "test": "deno test -P",
+    "coverage": "deno test -P --coverage=coverage && deno coverage coverage --lcov --output=coverage/lcov.info",
+    "bench": "deno bench",
+    "clean": "deno run -P=clean scripts/clean.ts",
+    "ok": "deno task fmt:check && deno task lint && deno task check && deno task test"
+  },
+  "permissions": {
+    "server": {
+      "net": true,
+      "read": [
+        "./data",
+        "./public"
+      ],
+      "write": [
+        "./data"
+      ],
+      "env": [
+        "PORT",
+        "DENO_ENV"
+      ]
+    },
+    "permissions-demo": {
+      "read": [
+        "./data/motd.txt"
+      ],
+      "env": [
+        "DENO_LAB_MESSAGE"
+      ]
+    },
+    "kv": {
+      "read": [
+        "./data"
+      ],
+      "write": [
+        "./data"
+      ]
+    },
+    "clean": {
+      "read": [
+        "./dist",
+        "./coverage",
+        "./data"
+      ],
+      "write": [
+        "./dist",
+        "./coverage",
+        "./data"
+      ]
+    }
+  },
+  "test": {
+    "include": [
+      "tests/"
+    ],
+    "permissions": {
+      "read": true,
+      "write": true,
+      "env": [
+        "DENO_DIR"
+      ]
+    }
+  },
+  "fmt": {
+    "lineWidth": 100,
+    "semiColons": true,
+    "singleQuote": false,
+    "exclude": [
+      "dist/",
+      "coverage/",
+      "data/todos.json"
+    ]
+  },
+  "lint": {
+    "include": [
+      "mod.ts",
+      "src/",
+      "tests/",
+      "benches/",
+      "scripts/",
+      "examples/"
+    ],
+    "exclude": [
+      "dist/",
+      "coverage/",
+      "examples/npm_node/",
+      "examples/jsr_std/"
+    ],
+    "rules": {
+      "tags": [
+        "recommended"
+      ],
+      "include": [
+        "ban-untagged-todo"
+      ],
+      "exclude": []
+    }
+  },
+  "compile": {
+    "include": [
+      "data/motd.txt",
+      "public/"
+    ],
+    "exclude": [
+      "data/*.kv*",
+      "data/todos.json"
+    ]
+  },
+  "exclude": [
+    "dist/",
+    "coverage/",
+    "node_modules/",
+    "examples/npm_node/node_modules/",
+    "examples/jsr_std/.deno/"
+  ]
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deno browser bundle sample</title>
+    <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 720px;
+      margin: 4rem auto;
+      line-height: 1.7;
+      padding: 0 1rem;
+    }
+    code {
+      background: #f5f5f5;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app">Run <code>deno task bundle:browser</code> first.</div>
+    <script type="module" src="../../dist/browser-client.js"></script>
+  </body>
+</html>

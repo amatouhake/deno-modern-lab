@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "@std/path": "jsr:@std/path@^1"
+  },
+  "permissions": {
+    "jsr-std": {
+      "import": [
+        "jsr.io"
+      ]
+    }
+  }
+}
