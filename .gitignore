@@ -1,0 +1,21 @@
+# Build and coverage artifacts
+dist/
+coverage/
+
+# Environment and tooling
+.env
+node_modules/
+
+# Deno lockfile
+deno.lock
+
+# KV/DB artifacts
+data/*.kv*
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+tmp/*
+*.tmp
