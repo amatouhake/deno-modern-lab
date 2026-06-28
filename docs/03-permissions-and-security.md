@@ -1,8 +1,19 @@
 # Permissions and security
 
 Deno の大きな特徴は、ファイル・ネットワーク・環境変数・subprocess
-などへのアクセスがデフォルトで閉じていることです。この lab では、その特徴を見失わないように `-A`
-を避け、named permission set を使っています。
+などへのアクセスがデフォルトで閉じていることです。Node.js では何も指定しなければファイルシステムや
+ネットワークに自由にアクセスできましたが、Deno は逆で「必要な権限だけを明示する」設計です。
+
+```bash
+# 権限なし → ファイルを読もうとするとエラー
+deno run src/permissions_demo.ts
+
+# 必要な権限を指定して実行
+deno run --allow-read=./data --allow-env=DENO_LAB_MESSAGE src/permissions_demo.ts
+```
+
+`-A` を付けるとすべての権限を許可できますが、この lab では学習・確認用でも `-A` を避け、 named
+permission set を使っています。
 
 ## なぜ permission set を使うか
 

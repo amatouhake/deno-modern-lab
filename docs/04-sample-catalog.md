@@ -10,9 +10,11 @@ deno task hello --name HAKE --json --inspect-runtime
 
 見るポイント:
 
-- `Deno.args`
-- `import.meta.main`
-- `Deno.exit`
+- `Deno.args` — `process.argv` に相当するコマンドライン引数の配列
+- `import.meta.main` — Python の `if __name__ == "__main__":` に相当。このファイルが直接実行
+  されたときだけ `true` になります。他のファイルから import された場合は `false` のため、
+  同じファイルをライブラリとしても CLI としても使い分けられます。
+- `Deno.exit` — プロセスを終了する（`process.exit` 相当）
 - pure function と CLI I/O の分離
 
 ## `src/server.ts`
@@ -56,8 +58,13 @@ deno task jsr-std
 
 見るポイント:
 
-- `jsr:` package import
-- root config と optional sample config の分離
+- `jsr:` package import — `jsr:@std/path` のように specifier の先頭に `jsr:` を付けて JSR から
+  パッケージを取得します。npm の `npm install` に相当する手順は不要で、import するだけで自動取得
+  されます。
+- `deno.lock` — このフォルダ内の lockfile です。`package-lock.json` と同様に、依存の正確な
+  バージョンを記録して再現性を保証します。
+- root config と optional sample config の分離 — `--config examples/jsr_std/deno.json` で root の
+  `deno.json` とは別の設定を使い、外部 registry への通信を `deno task ok` から切り離しています。
 - registry 依存のサンプルを通常の `deno task ok` から外す設計
 
 ## `examples/npm_node/main.ts`
@@ -84,10 +91,11 @@ deno task kv
 
 見るポイント:
 
-- `--unstable-kv`
-- `Deno.openKv(path)`
-- `kv.atomic().check(...).set(...).commit()`
-- `kv.list({ prefix })`
+- `--unstable-kv` — Deno は API が正式安定化される前に `--unstable-<機能名>` フラグで opt-in
+  する段階を設けています。KV はまだこの段階です。フラグなしで実行するとエラーになります。
+- `Deno.openKv(path)` — ローカルファイルをバックエンドにした key-value store を開きます
+- `kv.atomic().check(...).set(...).commit()` — 楽観的ロックによるアトミック操作
+- `kv.list({ prefix })` — prefix でキーを範囲走査
 
 ## `src/otel_demo.ts`
 
