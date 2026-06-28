@@ -11,6 +11,10 @@ deno.lock
 
 # KV/DB artifacts
 data/*.kv*
+data/todos.json
+
+# Desktop app artifacts
+desktop_app/
 
 # Logs
 *.log
