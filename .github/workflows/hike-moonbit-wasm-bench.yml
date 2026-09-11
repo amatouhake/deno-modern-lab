@@ -1,0 +1,66 @@
+name: Hike vs MoonBit Wasm size benchmark
+
+on:
+  push:
+    branches:
+      - experiment/hike-moonbit-wasm-bench
+    paths:
+      - "experiments/hike-moonbit-wasm-bench/**"
+      - ".github/workflows/hike-moonbit-wasm-bench.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[bench-results]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.x"
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld binaryen brotli
+
+      - name: Install MoonBit
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Run benchmark
+        working-directory: experiments/hike-moonbit-wasm-bench
+        run: bash scripts/benchmark.sh
+
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hike-moonbit-wasm-bench-${{ github.run_id }}
+          if-no-files-found: error
+          path: |
+            experiments/hike-moonbit-wasm-bench/out/
+            experiments/hike-moonbit-wasm-bench/results/latest.md
+            experiments/hike-moonbit-wasm-bench/results/latest.csv
+          retention-days: 30
+
+      - name: Publish generated result tables to branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/hike-moonbit-wasm-bench/results/latest.md \
+                  experiments/hike-moonbit-wasm-bench/results/latest.csv
+          if git diff --cached --quiet; then
+            echo "No result changes to commit."
+          else
+            git commit -m "chore: update wasm benchmark results [bench-results]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
