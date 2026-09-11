@@ -75,12 +75,30 @@ build_hike \
   "$OUT/hike-browser-article.wasm" \
   "$OUT/hike-browser-article.runtime.js"
 
-say "Build upstream Hike browser example at latest pinned snapshot"
-build_hike \
-  "$HIKE_LATEST_SNAPSHOT" \
-  "$WORK/hike-lang/examples/browser/main.hike" \
-  "$OUT/hike-browser-latest.wasm" \
-  "$OUT/hike-browser-latest.runtime.js"
+say "Build upstream Hike browser example at latest pinned snapshot (non-blocking)"
+git -C "$WORK/hike-lang" checkout --quiet "$HIKE_LATEST_SNAPSHOT"
+set +e
+(
+  cd "$WORK/hike-lang"
+  go run ./cmd/hikec build -target wasm32 \
+    "$WORK/hike-lang/examples/browser/main.hike" \
+    -o "$OUT/hike-browser-latest.wasm"
+) >"$WORK/hike-latest-build.log" 2>&1
+latest_status=$?
+set -e
+if [[ $latest_status -eq 0 ]]; then
+  cat "$WORK/hike-latest-build.log"
+  save_runtime "$OUT/hike-browser-latest.runtime.js"
+else
+  cat "$WORK/hike-latest-build.log" >&2
+  {
+    echo "Hike latest snapshot failed to build (exit=$latest_status)."
+    echo "commit=$HIKE_LATEST_SNAPSHOT"
+    echo
+    cat "$WORK/hike-latest-build.log"
+  } > "$OUT/hike-browser-latest.ERROR.txt"
+  rm -f "$OUT/hike-browser-latest.wasm" "$OUT/runtime.js"
+fi
 
 say "Build MoonBit Fibonacci with linear-memory wasm backend"
 (
